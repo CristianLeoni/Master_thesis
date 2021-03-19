@@ -1,0 +1,18 @@
+<!doctype html>
+<html>
+<head>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="{{ url_for('static', filename='Boxplot.js') }}"></script>
+
+</head>
+<body>
+    <script>
+		
+		d3.csv('http:\\box',function(data){
+			console.log(data);
+			b = new Boxplot('body',data);
+		});
+		
+
+    </script>
+</body>
