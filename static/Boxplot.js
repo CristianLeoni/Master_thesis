@@ -18,8 +18,8 @@ class Boxplot{
 		var self = this;
 		
 		var margin = {right:10,top:10}
-		var text = {bottom: 30, left: 40},
-			width = 460,
+		var text = {bottom: 30, left: 140},
+			width = 560,
 			height = 400 ;
 				
 		var p_height = height - text.bottom -margin.top,

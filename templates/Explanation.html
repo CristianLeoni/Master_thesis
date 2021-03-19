@@ -32,17 +32,20 @@
 				}
 			}
 		}
-		var perfs = Array.from(GetURLParameter('performances').split(','));
-		console.log('Moooo');
-		console.log(perfs);
-		if(perfs)
-			perfs.forEach((p)=>new Performance_wheel('#performace_plot',p))
+		if(GetURLParameter('performances')){
+			var perfs = Array.from(GetURLParameter('performances').split(','));
+			console.log('Moooo');
+			console.log(perfs);
+			if(perfs)
+				perfs.forEach((p)=>new Performance_wheel('#performace_plot',p))
+
+		}
 			
 		
-		d3.csv('http:\\box',function(data){
+		d3.csv('http:\\elaborate_dataset',function(data){
 			console.log(data);
-			new Histogram('#explanation_plot',data);
 			new Boxplot('#explanation_plot',data);
+			new Histogram('#explanation_plot',data);
 		});
 		
 
