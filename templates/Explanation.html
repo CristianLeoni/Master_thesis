@@ -16,6 +16,7 @@
 	<div id='summary_plot'></div>
 	<div id='performace_plot'></div>
 	<div id='explanation_plot'/></div>
+	
     <script>
 		function GetURLParameter(sParam)
 		{
@@ -32,6 +33,8 @@
 				}
 			}
 		}
+		console.log('{{params}}'.split(','))
+		
 		if(GetURLParameter('performances')){
 			var perfs = Array.from(GetURLParameter('performances').split(','));
 			console.log('Moooo');
@@ -40,14 +43,48 @@
 				perfs.forEach((p)=>new Performance_wheel('#performace_plot',p))
 
 		}
-			
+		var selection = GetURLParameter('selection')
+		if(selection){
+			d3.csv('http:\\elaborate_dataset_id_'+selection,function(data){
+				console.log(data);
+				new Boxplot('#explanation_plot',data);
+				new Histogram('#explanation_plot',data);
+			});
+		}
 		
-		d3.csv('http:\\elaborate_dataset',function(data){
-			console.log(data);
-			new Boxplot('#explanation_plot',data);
-			new Histogram('#explanation_plot',data);
-		});
+			
+
+	
+	
+	
+		
 		
 
     </script>
 </body>
+
+
+
+
+
+<!-- OLD CODE -->
+		<!-- var payload = { -->
+			<!-- a: 1, -->
+			<!-- b: 2, -->
+			<!-- selected: '{{params}}' -->
+		<!-- }; -->
+
+		<!-- var data = new FormData(); -->
+		<!-- data.append( "json", JSON.stringify( payload ) ); -->
+
+		<!-- fetch("/elaborate_dataset", -->
+		<!-- { -->
+			<!-- method: "POST", -->
+			<!-- body: data -->
+		<!-- }) -->
+		<!-- .then(function(res){ return res.text()}) -->
+		<!-- .then(function(data){  -->
+			<!-- csv =  d3.csvParse(data); -->
+			<!-- new Boxplot('#explanation_plot',csv); -->
+			<!-- new Histogram('#explanation_plot',csv); -->
+		<!-- }) -->

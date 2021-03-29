@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+  <title>Band scale</title>
+</head>
+
+<style>
+body {
+  font-family: "Helvetica Neue", Helvetica, sans-serif;
+  font-size: 14px;
+  color: #333;
+}
+rect {
+	fill: orange;
+}
+</style>
+
+</head>
+
+<body>
+	<script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-2.2.1.min.js" integrity="sha384-qkRvDQVAIfzsJo40iRBbxt6sttt0hv4lh74DG7OK4MCHv4C5oohXYoHUM5W11uqS" crossorigin="anonymous"></script>
+	<script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-widgets-2.2.1.min.js" integrity="sha384-Sb7Mr06a9TNlet/GEBeKaf5xH3eb6AlCzwjtU82wNPyDrnfoiVl26qnvlKjmcAd+" crossorigin="anonymous"></script>
+	<script src="https://d3js.org/d3.v4.min.js"></script>
+	<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.2.2/d3.min.js"></script> -->
+
+<button>Click Me!</button>
+
+<script>
+	const btn = document.querySelector('button');
+
+	function sendData( data ) {
+	  console.log( 'Sending data' );
+
+	  const XHR = new XMLHttpRequest();
+
+	  let urlEncodedData = "",
+		  urlEncodedDataPairs = [],
+		  name;
+
+	  // Turn the data object into an array of URL-encoded key/value pairs.
+	  for( name in data ) {
+		urlEncodedDataPairs.push( encodeURIComponent( name ) + '=' + encodeURIComponent( data[name] ) );
+	  }
+
+	  // Combine the pairs into a single string and replace all %-encoded spaces to
+	  // the '+' character; matches the behavior of browser form submissions.
+	  urlEncodedData = urlEncodedDataPairs.join( '&' ).replace( /%20/g, '+' );
+
+	  // Define what happens on successful data submission
+	  XHR.addEventListener( 'load', function(event) {
+		alert( 'Yeah! Data sent and response loaded.' );
+	  } );
+
+	  // Define what happens in case of error
+	  XHR.addEventListener( 'error', function(event) {
+		alert( 'Oops! Something went wrong.' );
+	  } );
+
+	  // Set up our request
+	  XHR.open( 'POST', '/save_selection' );
+
+	  // Add the required HTTP header for form data POST requests
+	  <!-- XHR.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' ); -->
+	  XHR.setRequestHeader( 'Content-Type', 'text/plain' );
+	  
+	  console.log(urlEncodedData)
+	  // Finally, send our data.
+	  XHR.send( urlEncodedData );
+	}
+
+	btn.addEventListener( 'click', function() {
+	  sendData( {test:'ok'} );
+	} 
+)
+
+</script>
+</body>
+</html>

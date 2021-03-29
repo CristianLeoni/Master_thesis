@@ -40,7 +40,7 @@ class Histogram{
 		var histogram = d3.histogram()
 		  .value(function(d) { return +d; })   // I need to give the vector of value
 		  .domain(x.domain()) // then the domain of the graphic
-		  .thresholds(x.ticks(100)); // then the numbers of bins
+		  .thresholds(x.ticks(12)); // then the numbers of bins
 
 		console.log(histogram);
 		var bins =[]
@@ -49,7 +49,7 @@ class Histogram{
 				d.columns.forEach(function(col){
 					var bin = histogram(d.map(function(g) {return g[col];}));
 					var max_bin_height = d3.max(bin, function(d) { return d.length; });
-					bins.push({key:col, bin:bin, max: max_bin_height})
+					bins.push({key:col.replace("=","_"), bin:bin, max: max_bin_height})
 				})
 			})
 			.entries(data)
