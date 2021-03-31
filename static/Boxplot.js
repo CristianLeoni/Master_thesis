@@ -68,14 +68,7 @@ class Boxplot{
 			.data(arrays)
 			.enter().append("g").attr("id",(d)=>d.col);
 		
-		//draw rectangles
-		draw.append("rect")
-				.attr("y", function(d){return(y_scale(d.key))})
-				.attr("x", function(d){return(x_scale(d.q1))})
-				.attr("width", function(d){return (x_scale(d.q3)-x_scale(d.q1))})
-				.attr("height", y_scale.bandwidth() )
-				.attr("stroke", "black")
-				.style("fill", "#69b3a2");
+		
 		//draw middle line
 		draw.append("line")
 				.style("stroke-dasharray", ("3, 3"))
@@ -84,6 +77,15 @@ class Boxplot{
 				.attr("x2", function(d){console.log(d.min+" "+x_scale(d.min));return(x_scale(d.min))})
 				.attr("y2", function(d){return(y_scale(d.key)+y_scale.bandwidth()/2)} )
 				.attr("stroke", "black");
+		
+		//draw rectangles
+		draw.append("rect")
+				.attr("y", function(d){return(y_scale(d.key))})
+				.attr("x", function(d){return(x_scale(d.q1))})
+				.attr("width", function(d){return (x_scale(d.q3)-x_scale(d.q1))})
+				.attr("height", y_scale.bandwidth() )
+				.attr("stroke", "black")
+				.style("fill", "#69b3a2");
 		
 		//draw wiskers
 		draw.append("line")

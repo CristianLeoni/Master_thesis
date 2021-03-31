@@ -1,6 +1,9 @@
 class Categorical_chooser{
 	
 	constructor(id,name,default_value,values){
+		console.log('name+default_value+values')
+
+		console.log(name+default_value+values)
 		this.id = id,
 		this.name = name;
 
@@ -18,6 +21,7 @@ class Categorical_chooser{
 			.style('margin','20px')
 			.style('width','fill')
 			.style('height','fill')
+			.style( 'float','left')
 			
 		var button = this
 			.div.append("input")

@@ -29,12 +29,37 @@ rect {
 </form>
 
 <script>
+	function encode_params(params){
+			var encoded ='?'
+			for(var key in params) {
+				encoded += key+'='+params[key]+'&'
+			}
+			return encoded.slice(0,-1);
+		}
+		function decode_parameters(){
+			var url_params = new Object();
+			var sPageURL = window.location.search.substring(1);
+			var sURLVariables = sPageURL.split('&');
+			for (var i = 0; i < sURLVariables.length; i++)
+			{
+				var sParameterName = sURLVariables[i].split('=');				
+				if(sParameterName[1])
+					url_params[sParameterName[0]] = sParameterName[1];
+
+			}
+			return url_params;
+		}
+	
+		var url_params = decode_parameters();
+	
+	
+	
 	col = ['green', 'blue', 'red'];
 	cl = 1;
 	col = d3.scaleOrdinal().domain([1,10]).range(d3.schemeSet2)
 	source = []
 	
-	console.log("VIsualize");
+	
 	
 	function test(){
 		console.log('document loaded');
@@ -55,8 +80,6 @@ rect {
 	}
 	
 	function new_open_window(value){
-		const message = "This is a test."
-		 data = {'to': "This is a test."};
 		var request = new XMLHttpRequest();
 		request.open('POST', '/save_test', true);
 
@@ -64,7 +87,8 @@ rect {
 			if (this.status == 200) {
 			  <!-- const response = JSON.parse(this.responseText); -->
 			  console.log(this.responseText);
-			  window.location.href = '/explanation?selection='+this.responseText
+			  url_params['selection'] = this.responseText
+			  window.location.href = '/explanation'+encode_params(url_params)
 			}
 		}
 		request.send(value);

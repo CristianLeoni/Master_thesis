@@ -18,48 +18,40 @@
 	<div id='explanation_plot'/></div>
 	
     <script>
-		function GetURLParameter(sParam)
-		{
-			var sPageURL = window.location.search.substring(1);
-			console.log('Params')
-			console.log(sPageURL)
-			var sURLVariables = sPageURL.split('&');
-			for (var i = 0; i < sURLVariables.length; i++) 
-			{
-				var sParameterName = sURLVariables[i].split('=');
-				if (sParameterName[0] == sParam) 
-				{
-					return sParameterName[1];
-				}
+	
+		function encode_params(params){
+			var encoded ='?'
+			for(var key in params) {
+				encoded += key+'='+params[key]+'&'
 			}
+			return encoded.slice(0,-1);
 		}
-		console.log('{{params}}'.split(','))
+		function decode_parameters(){
+			var url_params = new Object();
+			var sPageURL = window.location.search.substring(1);
+			var sURLVariables = sPageURL.split('&');
+			for (var i = 0; i < sURLVariables.length; i++)
+			{
+				var sParameterName = sURLVariables[i].split('=');				
+				if(sParameterName[1])
+					url_params[sParameterName[0]] = sParameterName[1];
+			}
+			return url_params;
+		}
+	
+		var url_params = decode_parameters();
 		
-		if(GetURLParameter('performances')){
-			var perfs = Array.from(GetURLParameter('performances').split(','));
-			console.log('Moooo');
-			console.log(perfs);
-			if(perfs)
-				perfs.forEach((p)=>new Performance_wheel('#performace_plot',p))
-
+		if(url_params['performances']){
+			url_params['performances'].split(',').forEach((p)=>new Performance_wheel('#performace_plot',+p))
 		}
-		var selection = GetURLParameter('selection')
-		if(selection){
-			d3.csv('http:\\elaborate_dataset_id_'+selection,function(data){
+
+		if(url_params['selection']){
+			d3.csv('http:\\elaborate_dataset_id_'+url_params['selection']+''+encode_params(url_params),function(data){
 				console.log(data);
 				new Boxplot('#explanation_plot',data);
 				new Histogram('#explanation_plot',data);
 			});
-		}
-		
-			
-
-	
-	
-	
-		
-		
-
+		}	
     </script>
 </body>
 

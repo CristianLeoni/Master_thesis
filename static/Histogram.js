@@ -49,7 +49,7 @@ class Histogram{
 				d.columns.forEach(function(col){
 					var bin = histogram(d.map(function(g) {return g[col];}));
 					var max_bin_height = d3.max(bin, function(d) { return d.length; });
-					bins.push({key:col.replace("=","_"), bin:bin, max: max_bin_height})
+					bins.push({key:col.replace("=","_").replace("(","_").replace(")","_"), bin:bin, max: max_bin_height})
 				})
 			})
 			.entries(data)
