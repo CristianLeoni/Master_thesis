@@ -54,7 +54,7 @@ rect {
 	
 	
 	
-	col = ['green', 'blue', 'red'];
+	col = ['red','green'];
 	cl = 1;
 	col = d3.scaleOrdinal().domain([1,10]).range(d3.schemeSet2)
 	source = []
@@ -88,7 +88,7 @@ rect {
 			  <!-- const response = JSON.parse(this.responseText); -->
 			  console.log(this.responseText);
 			  url_params['selection'] = this.responseText
-			  window.location.href = '/explanation'+encode_params(url_params)
+			  window.location.href = '/classifier_selection'+encode_params(url_params)
 			}
 		}
 		request.send(value);

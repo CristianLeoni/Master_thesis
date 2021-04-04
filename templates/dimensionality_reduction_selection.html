@@ -17,8 +17,13 @@
 		background-color: #f1f1f1;
 		padding-left: 20px;
 		overflow:auto;
+		
+		display: grid;
+		grid-gap: 10px;
+		grid-template-columns: repeat(6, 1fr);
+		grid-template-rows: repeat(auto-fill, 70px);
 	  }
-	  .menu_entry{
+	.menu_entry{
 		padding:5px;
 		background-color: #f1f1f1;
 		border-radius:10px;
@@ -46,6 +51,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.2.2/d3.min.js"></script>
   <script src="{{ url_for('static', filename='Menu.js') }}"></script>
   <script src="{{ url_for('static', filename='Dataset_details.js') }}"></script>
+  <script src="{{ url_for('static', filename='Parameters.js') }}"></script> 
   <script>
   
   		function encode_params(params){
@@ -67,9 +73,9 @@
 			}
 			return url_params;
 		}
-		
+		 
 		function navigate(){
-			window.location.href = '/dimensionality_reduction_selection'+encode_params(url_params)
+			window.location.href = '/test_scatter_flask'+encode_params(url_params)
 		}
 	
 		var url_params = decode_parameters();
@@ -78,13 +84,30 @@
 		var menu_details,menu;
 		function callback(){
 			var selected = menu.get_selected()
-			url_params['dataset']=selected;
-			menu_details.update(selected);
+			url_params['D_R']=selected;
+			
+			d3.json('/get_DR_'+selected,function(data){
+				data.forEach(function(d){
+					console.log(d);
+					console.log(d[0]);
+					if(d[0]==='categorical'){
+						console.log()
+						new Categorical_chooser('#details',d[1],d[2],d[3]);
+					}
+					if(d[0]==='int'){
+						console.log()
+						new Int_parameter('#details',d[1],d[2]);
+					}
+					if(d[0]==='float'){
+						console.log()
+						new Float_parameter('#details',d[1],d[2],d[3]);
+					}
+				});
+			});
 		}
-	  
-		d3.json('/datasets_entries',function(d){
+		
+		d3.json('/get_DR_*',function(d){
 			menu = new Menu('#menu',d,callback);
-			menu_details = new Dataset_details('#details',[]);
 		})
 
   </script>
