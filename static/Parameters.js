@@ -3,7 +3,7 @@ class Int_parameter{
 	constructor(id,name,default_value,min_value,max_value){
 		this.id = id,
 		this.name = name;
-
+		this.changed = false;
 		this.min_value=+min_value;
 		this.max_value = +max_value;
 
@@ -64,6 +64,7 @@ class Int_parameter{
 				return 0;
 			}
 			this.selected_value = parsed;
+			this.changed = true;
 		}
 	}
 
@@ -78,7 +79,8 @@ class Float_parameter{
 	constructor(id,name,default_value,min_value,max_value){
 		this.id = id,
 		this.name = name;
-
+		this.changed = false;
+		
 		this.min_value=+min_value;
 		this.max_value = +max_value;
 
@@ -138,6 +140,7 @@ class Float_parameter{
 				return 0;
 			}
 			this.selected_value = parsed;
+			this.changed = true;
 		}
 	}
 
@@ -155,8 +158,9 @@ class Categorical_chooser{
 		console.log(name+default_value+values)
 		this.id = id,
 		this.name = name;
+		this.changed = false;
 
-		this.selected = default_value;
+		this.selected_value = default_value;
 		this.values = values;
 
 		this.draw();
@@ -182,7 +186,7 @@ class Categorical_chooser{
 		var button = this
 			.div.append("input")
 			.attr("type", "button")
-			.attr("value", this.selected)
+			.attr("value", this.selected_value)
 			.attr('class',"btn btn-secondary dropdown-toggle")
 
 		
@@ -205,11 +209,59 @@ class Categorical_chooser{
 			.enter()
 			.append('div')			
 			.text((d)=>d)
-			.on("click", function(d){self.selected = d; temp.attr('display','none');button.attr('value',d);temp.style('display','none')});				
+			.on("click", function(d){self.changed = true;self.selected_value = d; temp.attr('display','none');button.attr('value',d);temp.style('display','none')});				
 	}
 	
+	selected(){
+		return this.selected_value;
+	}
+	
+}
+
+class Parameter_grid{
+	constructor(id,data){
+		this.parameters = []
+		this.id = id;
+		this.data = data;
+		this.draw()
+	}
+	
+	update(data){
+		this.data = data;
+		this.parameters = []
+		d3.select(this.id).style('display','grid').selectAll('div').remove()
+
+		this.draw();
+	}
+	
+	draw(){
+		var self = this;
+		this.data.forEach(function(d){
+					if(d[0]==='categorical'){
+						self.parameters.push(new Categorical_chooser(self.id,d[1],d[2],d[3]));
+					}
+					if(d[0]==='int'){
+						self.parameters.push(new Int_parameter(self.id,d[1],d[2]));
+					}
+					if(d[0]==='float'){
+						self.parameters.push(new Float_parameter(self.id,d[1],d[2],d[3]));
+					}
+				});
+	}
+		
 	get_selected(){
-		return this.selected;
+		var selected=[];
+		this.parameters.forEach(function(d){
+			// console.log(d.name+':'+d.changed+':'+d.selected())
+			if(d.changed==true){
+				selected.push([d.name,d.selected()])
+			}
+		});
+		console.log(selected);
+		return selected;
 	}
 	
+	hide(){
+		d3.select(this.id).style('display',"inline").selectAll('div').remove();
+	}
 }

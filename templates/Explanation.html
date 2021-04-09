@@ -4,6 +4,8 @@
 	<style>
 		div{
 			text-align:center;
+			background-color: #f1f1f1;
+			width:fill;
 		}
 	</style>
 </head>
@@ -12,6 +14,7 @@
 	<script src="{{ url_for('static', filename='Histogram.js') }}"></script>
 	<script src="{{ url_for('static', filename='Boxplot.js') }}"></script>
 	<script src="{{ url_for('static', filename='Performance_wheel.js') }}"></script>
+	<script src="{{ url_for('static', filename='Scatterplot.js') }}"></script>
 
 	<div id='summary_plot'></div>
 	<div id='performace_plot'></div>
@@ -32,7 +35,7 @@
 			var sURLVariables = sPageURL.split('&');
 			for (var i = 0; i < sURLVariables.length; i++)
 			{
-				var sParameterName = sURLVariables[i].split('=');				
+				var sParameterName = sURLVariables[i].split('=');			
 				if(sParameterName[1])
 					url_params[sParameterName[0]] = sParameterName[1];
 			}
@@ -44,6 +47,11 @@
 		if(url_params['performances']){
 			url_params['performances'].split(',').forEach((p)=>new Performance_wheel('#performace_plot',+p))
 		}
+		
+		d3.csv('http:\\scatter_d3'+encode_params(url_params),function(data){
+			console.log(url_params['D_R']);
+			b = new Scatterplot('#summary_plot',data,url_params['dataset'],url_params['D_R']);
+		});
 
 		if(url_params['selection']){
 			d3.csv('http:\\elaborate_dataset_id_'+url_params['selection']+''+encode_params(url_params),function(data){

@@ -75,39 +75,26 @@
 		}
 		 
 		function navigate(){
+			url_params['D_R_params']='['+parameters.get_selected()+']';
 			window.location.href = '/test_scatter_flask'+encode_params(url_params)
 		}
 	
 		var url_params = decode_parameters();
 		console.log(url_params )
 	  
-		var menu_details,menu;
+		var parameters,menu;
 		function callback(){
 			var selected = menu.get_selected()
 			url_params['D_R']=selected;
 			
 			d3.json('/get_DR_'+selected,function(data){
-				data.forEach(function(d){
-					console.log(d);
-					console.log(d[0]);
-					if(d[0]==='categorical'){
-						console.log()
-						new Categorical_chooser('#details',d[1],d[2],d[3]);
-					}
-					if(d[0]==='int'){
-						console.log()
-						new Int_parameter('#details',d[1],d[2]);
-					}
-					if(d[0]==='float'){
-						console.log()
-						new Float_parameter('#details',d[1],d[2],d[3]);
-					}
-				});
+				parameters.update(data);
 			});
 		}
 		
 		d3.json('/get_DR_*',function(d){
 			menu = new Menu('#menu',d,callback);
+			parameters = new Parameter_grid('#details',[])
 		})
 
   </script>

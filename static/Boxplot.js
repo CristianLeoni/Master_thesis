@@ -17,7 +17,7 @@ class Boxplot{
 	setup(data){
 		var self = this;
 		
-		var margin = {right:10,top:10}
+		var margin = {right:0,top:0}
 		var text = {bottom: 30, left: 140},
 			width = 560,
 			height = 400 ;
@@ -35,16 +35,24 @@ class Boxplot{
 			.attr("transform",
 			"translate("+text.left+"," + p_height + ")");
 		
+		//Background
+		svg.append("rect")
+			.attr("width", width)
+			.attr("height", height)
+			.attr("fill", "white")
+			.attr("transform","translate(0," + (-height) + ")");;
+		
 		var arrays = []
 		var sumstat = d3.nest() // nest function allows to group the calculation per level of a factor
 			.rollup(function(d){
 				d.columns.forEach(function(col){
+					// change to show min max
 					var q1 = d3.quantile(d.map(function(g) {return +g[col];}).sort(d3.ascending),0.25)
 					var median = d3.quantile(d.map(function(g) { return +g[col];}).sort(d3.ascending),0.5)
 					var q3 = d3.quantile(d.map(function(g) { return +g[col];}).sort(d3.ascending),0.75)
 					var interQuantileRange = q3 - q1
-					var min = q1 - 1.5 * interQuantileRange
-					var max = q3 + 1.5 * interQuantileRange
+					var min = d3.min(d.map((g)=>+g[col]))//q1 - 1.5 * interQuantileRange
+					var max = d3.max(d.map((g)=>+g[col]))//q3 + 1.5 * interQuantileRange
 					arrays.push({key:col,q1: q1, median: median, q3: q3, interQuantileRange: interQuantileRange, min: min, max: max})
 				})
 			})
@@ -85,7 +93,8 @@ class Boxplot{
 				.attr("width", function(d){return (x_scale(d.q3)-x_scale(d.q1))})
 				.attr("height", y_scale.bandwidth() )
 				.attr("stroke", "black")
-				.style("fill", "#69b3a2");
+				.style("fill", "#69b3a2")
+				.on('click',(d)=>console.log(d.key));
 		
 		//draw wiskers
 		draw.append("line")
