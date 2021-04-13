@@ -2,6 +2,15 @@ class Boxplot{
 	constructor(id,data){
 		this.id = id;
 		this.setup(data);
+		this.listeners = []
+	}
+	
+	listen(obj){
+		this.listeners.push(obj);
+	}
+	
+	trigger_change(val){
+		this.listeners.forEach((l)=>l.listener_change(val))
 	}
 	
 	obj_min(obj){
@@ -93,8 +102,16 @@ class Boxplot{
 				.attr("width", function(d){return (x_scale(d.q3)-x_scale(d.q1))})
 				.attr("height", y_scale.bandwidth() )
 				.attr("stroke", "black")
-				.style("fill", "#69b3a2")
-				.on('click',(d)=>console.log(d.key));
+				.style("fill", "#69b3a2");
+
+		//Invisible on click 
+		draw.append("rect")
+				.attr("y", function(d){return(y_scale(d.key))})
+				.attr("x", 0)
+				.attr("width", width)
+				.attr("height", y_scale.bandwidth() )
+				.style("opacity", 0)
+				.on('click',(d)=>self.trigger_change(d.key));
 		
 		//draw wiskers
 		draw.append("line")
