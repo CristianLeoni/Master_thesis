@@ -31,7 +31,7 @@ class Histogram{
 
 		// X axis: scale and draw:
 		var x = d3.scaleLinear()
-		  .domain([x_min - Math.abs(x_min)*0.05,x_max+Math.abs(x_max)*0.05])     // can use this instead of 1000 to have the max of data: d3.max(data, function(d) { return +d.price })
+		  .domain([x_min - Math.abs(x_min)*0.05-0.2,x_max+Math.abs(x_max)*0.05+0.2])     // can use this instead of 1000 to have the max of data: d3.max(data, function(d) { return +d.price })
 		  .range([0, width]);
 		svg.append("g")
 		  .attr("transform", "translate(0," + height + ")")
@@ -91,7 +91,7 @@ class Histogram{
 				//.attr("transform", (d)=> "translate(" + x(d.x0) + "," + y(d.length) + ")")
 				.attr("width", (d)=> x(d.x1) - x(d.x0) -1 )
 				.attr("height", (d)=>y(d.length)+1)
-				.style("fill", col_array[i])
+				.style("fill", '#69b3a2')//col_array[i]
 				.style("opacity", 0.8)
 				.on('click',(d)=>console.log(b.key))
 		)

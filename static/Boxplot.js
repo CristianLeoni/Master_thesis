@@ -102,7 +102,8 @@ class Boxplot{
 				.attr("width", function(d){return (x_scale(d.q3)-x_scale(d.q1))})
 				.attr("height", y_scale.bandwidth() )
 				.attr("stroke", "black")
-				.style("fill", "#69b3a2");
+				.style("fill", "#69b3a2")
+				.style("opacity", 0.8);
 
 		//Invisible on click 
 		draw.append("rect")

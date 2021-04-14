@@ -21,8 +21,8 @@ class Scatterplot{
 		
 		var margin = {right:0,top:0}
 		var text = {bottom: 30, left: 140},
-			width = 560,
-			height = 400 ;
+			width = 370,
+			height = 370 ;
 				
 		var p_height = height -margin.top,
 			p_width = width - margin.right;
@@ -30,7 +30,7 @@ class Scatterplot{
 
 		var div = d3
 			.select(this.id)
-			.append('div');
+			.append('div').style('display','inline-block').style('padding-bottom','30px');
 		div.append('h4').text(dr+' of '+dataset)
 
 		var svg = div
@@ -56,8 +56,8 @@ class Scatterplot{
 		
 		console.log("scale min: "+x_min +" scale max: "+x_max);
 
-		var x_scale = d3.scaleLinear().domain([x_min - Math.abs(x_min)*0.05,x_max+Math.abs(x_max)*0.05]).range([0,p_width]),
-			y_scale = d3.scaleLinear().domain([y_min - Math.abs(y_min)*0.05,y_max+Math.abs(y_max)*0.05]).range([0,-p_height]);
+		var x_scale = d3.scaleLinear().domain([x_min - Math.abs(x_min)*0.05-0.2,x_max+Math.abs(x_max)*0.05+0.2]).range([0,p_width]),
+			y_scale = d3.scaleLinear().domain([y_min - Math.abs(y_min)*0.05-0.2,y_max+Math.abs(y_max)*0.05+0.2]).range([0,-p_height]);
 		
 		
 		svg.append('line')
@@ -81,12 +81,89 @@ class Scatterplot{
 					.data(data)
 					.enter()
 					.append("circle")
+					.attr('id',(d,i)=>i)
 					.style("stroke", "gray")
-					.style("fill", function(d){if(d.selected==0){return "blue"} else {return 'yellow'}})
+					.style("fill", function(d,i){if(i==10){console.log(d.x),console.log(x_scale(d.x))}if(d.selected==0){return "blue"} else {return 'yellow'}})
 					.attr("r", 3)
 					.attr("cx", (d)=>x_scale(d.x))
 					.attr("cy", (d)=>y_scale(d.y));
 		
+		
+		//mouse selection
+		svg.on( "mousedown", function() {
+            var p = d3.mouse( this);
+
+            svg.append("rect")            
+				.attr('class'  , 'selection')
+				.attr('x'  , p[0])
+				.attr('y'  , p[1])
+				.attr('width'  , 10)
+				.attr('height'  , 10);
+        })
+        .on( "mousemove", function() {
+            var s = svg.select( "rect.selection");
+
+            if( !s.empty()) {
+                var p = d3.mouse( this);
+				
+				var d = {
+                        x       : +s.attr( "x"),
+                        y       : +s.attr( "y"),
+                        width   : +s.attr( "width"),
+                        height  : +s.attr( "height")
+                    };
+					
+				var move = {
+                        x : p[0] - d.x,
+                        y : p[1] - d.y
+                }
+			
+				if( move.x < 1 || (move.x*2<d.width)) {
+					d.x = p[0];
+                    d.width -= move.x;
+                } else {
+                    d.width = move.x;       
+                }
+
+                if( move.y < 1 || (move.y*2<d.height)) {
+                    d.y = p[1];
+                    d.height -= move.y;
+                } else {
+                    d.height = move.y;       
+                }				
+				
+				s
+					.attr('x'  , d.x)
+					.attr('y'  , d.y)
+					.attr('width'  , d.width)
+					.attr('height'  , d.height);
+
+
+				svg
+					.selectAll("circle")
+					.style("fill", function(p,i){
+						if(
+						 x_scale(p.x) <= d.x+d.width && d.x <= x_scale(p.x)  
+						 && y_scale(p.y) <= d.y+d.height && d.y <= y_scale(p.y) 
+						 )
+						{
+							p.selected = 1;
+							return 'yellow'
+						} 
+						else {
+							p.selected = 0;
+							return "blue"
+						}
+					});
+			}
+				
+		})
+		.on( "mouseup", function() {
+			// remove selection frame
+			svg.selectAll("rect.selection").remove();
+			console.log(svg.selectAll("circle").data().map(a => a.selected))
+
+        });
 	}
 }
 

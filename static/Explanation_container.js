@@ -8,10 +8,13 @@ class Explanation_container{
 	setup(){
 		var id = this.id.replace('#','_');
 
-		this.exp_div = d3.select(this.id).append('div').attr('id','exp_cont'+id).style('width','100%');		
+		//.style('width','max-content').style('padding','10px')
+		this.exp_div = d3.select(this.id).append('div').attr('id','exp_cont'+id).style('float','right');
+		//.style('width','100%');		
 		this.hist_div = d3.select(this.id).append('div').attr('id','hist_cont'+id).style('width','100%');
-		//.style('visibility','hidden')		
-
+		//.style('visibility','hidden')	
+		
+		this.exp_div.append('h4').text('Importance explanation')
 		this.box = new Boxplot('#exp_cont'+id,this.data);
 		this.hist = new Histogram('#exp_cont'+id,this.data);
 		this.box.listen(this)
@@ -22,6 +25,9 @@ class Explanation_container{
 	}
 	
 	draw_single_hist(col){
+		if(col.includes("=")){
+			col = col.split('=')[0];
+		}
 		var self = this;
 		this.exp_div.style('visibility','hidden');
 		d3.json('get_hist_'+col+''+encode_params(decode_parameters()),function(data){
@@ -38,8 +44,10 @@ class Explanation_container{
 			width = 400 - margin.left - margin.right,
 			height = 300 - margin.top - margin.bottom;
 
-		var root =this.hist_div.append('div')
-			.style('display','inline-block');
+		var root =this.hist_div
+			.append('div')
+			.style('display','inline-block')
+			;
 
 		root.append('h3').text(col);
 		var svg = root
@@ -93,7 +101,7 @@ class Explanation_container{
 			  .data(bin_0)
 			  .enter()
 			  .append("rect")
-				.attr("x", (d)=>x(d.x0))//
+				.attr("x", (d)=>x(d.x0))//(d)=>x(d.x0)-(x(d.x1)-x(d.x0))/2)
 				.attr("y", (d)=>height-y(d.length))
 				//.attr("transform", (d)=> "translate(" + x(d.x0) + "," + y(d.length) + ")")
 				.attr("width", (d)=> x(d.x1) - x(d.x0) )

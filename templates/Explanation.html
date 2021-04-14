@@ -6,10 +6,22 @@
 			text-align:center;
 			background-color: #f1f1f1;
 		}
+		#explanation_plot{
+			text-align:center;
+		}
+		.selection {
+		  stroke          : gray;
+		  stroke-width    : 1px;
+		  stroke-dasharray: 4px;
+		  stroke-opacity  : 0.5;
+		  fill            : blue;
+		  fill-opacity	  : 0.2;
+		}
 	</style>
 </head>
 <body>
 	<script src="https://d3js.org/d3.v4.min.js"></script>
+	<script src="https://d3js.org/d3-brush.v2.min.js"></script>
 	<script src="{{ url_for('static', filename='Explanation_container.js') }}"></script>
 	<script src="{{ url_for('static', filename='Histogram.js') }}"></script>
 	<script src="{{ url_for('static', filename='Boxplot.js') }}"></script>
@@ -35,7 +47,7 @@
 			var sURLVariables = sPageURL.split('&');
 			for (var i = 0; i < sURLVariables.length; i++)
 			{
-				var sParameterName = sURLVariables[i].split('=');			
+				var sParameterName = sURLVariables[i].split('=');	
 				if(sParameterName[1])
 					url_params[sParameterName[0]] = sParameterName[1];
 			}
@@ -50,7 +62,7 @@
 		
 		d3.csv('http:\\scatter_d3'+encode_params(url_params),function(data){
 			console.log(url_params['D_R']);
-			b = new Scatterplot('#summary_plot',data,url_params['dataset'],url_params['D_R']);
+			b = new Scatterplot('#explanation_plot',data,url_params['dataset'],url_params['D_R']);
 		});
 
 		if(url_params['selection']){
