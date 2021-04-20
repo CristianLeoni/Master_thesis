@@ -8,7 +8,8 @@ function change(Perf,metrics){
 			return;
 		}
 		console.log('metrics not null')
-		d3.csv('/get_classifier_performances_'+metrics+''+encode_params(url_params),function(data){
+		console.log(Perf.get_classifiers())
+		d3.csv('/get_classifier_performances_'+metrics+'-'+Perf.get_classifiers()+encode_params(url_params),function(data){
 			console.log('classifier performances')
 			console.log(data)
 			Perf.draw(data);
@@ -17,31 +18,39 @@ function change(Perf,metrics){
 
 class Performance{
 	
-	constructor(id,data){
+	constructor(id,data,classifiers='*',w=560,h=400){
 		this.id = id;
 		this.data = data;
 
 		
 		var self = this;
+		this.w=+w;
+		this.h=+h;
 		d3.json('/get_metrics',function(d){
 			self.Checkbox = new Checkbox_menu(self.id,d,self)
-			self.draw([])
+			self.set_classifiers(classifiers)
+			self.draw([])	
 		});
+
+
 	}
 
 	draw(data){
 		if(!data){
-			data = this.data;
+			data =  [];
 		}
 		d3.select(this.id).selectAll('svg').remove();
 		
 		this.Checkbox.draw()
 		
 		// set the dimensions and margins of the graph
-		var margin = {top: 10, right: 50, bottom: 30, left: 100},
-			width = 560 - margin.left - margin.right,
-			height = 400 - margin.top - margin.bottom;
-
+		var margin = {top: 10, right: 50, bottom: 30, left: 140},
+			width = this.w - margin.left - margin.right,
+			height = this.h - margin.top - margin.bottom;
+			
+		console.log('width, height')
+		console.log(width)
+		console.log(height)
 		// append the svg object to the body of the page
 		var svg = d3.select(this.id)
 		  .append("svg")
@@ -91,10 +100,19 @@ class Performance{
 			})
 			.attr('fill', 'teal')
 			.attr('stroke', 'black');
-		svg
-		  .append("g")
-		  .attr("transform", "translate(0,0)")// This controls the vertical position of the Axis
-		  .call(d3.axisLeft(outerScale));
+		console.log('unique_classifiers')
+		console.log(unique_classifiers)
+		if(unique_classifiers.length>1){
+			svg
+			  .append("g")
+			  .attr("transform", "translate(0,0)")// This controls the vertical position of the Axis
+			  .call(d3.axisLeft(outerScale));
+		}else{
+			svg
+			  .append("g")
+			  .attr("transform", "translate(0,0)")// This controls the vertical position of the Axis
+			  .call(d3.axisLeft(innerScale));
+		}
 
 		svg
 		  .append("g")
@@ -102,7 +120,16 @@ class Performance{
 		  .call(d3.axisBottom(linScale));
 
 	}
-
+	
+	set_classifiers(classifiers){
+		this.classifiers=classifiers;
+		change(this,this.Checkbox.selected());
+	}
+	
+	get_classifiers(){
+		return this.classifiers;
+	}
+	
 	hide(){
 		d3.select(this.id).selectAll('svg').remove();
 	}
@@ -110,42 +137,42 @@ class Performance{
 
 
 class Checkbox_menu{
-			constructor(id,data,Perf) {
-				this.data = data;
-				this.id = id;
-				this.Perf = Perf
-				this.div = d3.select(id).append('div').style('overflow-y','auto').style('float','left')
-			}
+	constructor(id,data,Perf) {
+		this.data = data;
+		this.id = id;
+		this.Perf = Perf
+		this.div = d3.select(id).append('div').style('overflow-y','auto').style('float','left').style('text-align','left')
+	}
+	
+	draw(){
+		console.log('Checkbox_draw()');
+		var data = this.data;
+		var spans = this.div
+			.selectAll("span")
+			.data(data)
+			.enter()
+			.append("span");
+
+		var self = this;
+		spans.append("input")
+			.attr('type',"checkbox")
+			.attr('color','red')
+			.attr('name', this.id)
+			.attr('value', function(d, i) {return d;})
+			.on("change",function(d,i) {change(self.Perf,self.selected());});
+
+		spans.append("label")
+			.text(function(d) {return d;});
 			
-			draw(){
-				console.log('Checkbox_draw()');
-				var data = this.data;
-				var spans = this.div
-					.selectAll("span")
-					.data(data)
-					.enter()
-					.append("span");
+		spans.append('br');
+	}
 
-				var self = this;
-				spans.append("input")
-					.attr('type',"checkbox")
-					.attr('color','red')
-					.attr('name', this.id)
-					.attr('value', function(d, i) {return d;})
-					.on("change",function(d,i) {change(self.Perf,self.selected());});
-
-				spans.append("label")
-					.text(function(d) {return d;});
-					
-				spans.append('br');
-			}
-		
-			selected(){
-				var checked=[];
-				d3.selectAll('input[name="'+this.id+'"]:checked').each(function() {
-					checked.push(this.value);
-					});
-				console.log(checked);
-				return checked;
-			}
-		}
+	selected(){
+		var checked=[];
+		d3.selectAll('input[name="'+this.id+'"]:checked').each(function() {
+			checked.push(this.value);
+			});
+		console.log(checked);
+		return checked;
+	}
+}

@@ -9,10 +9,9 @@ class Explanation_container{
 		var id = this.id.replace('#','_');
 
 		//.style('width','max-content').style('padding','10px')
-		this.exp_div = d3.select(this.id).append('div').attr('id','exp_cont'+id).style('float','right');
+		this.exp_div = d3.select(this.id).append('div').attr('id','exp_cont'+id).style('padding','30px');//.style('float','right')
 		//.style('width','100%');		
 		this.hist_div = d3.select(this.id).append('div').attr('id','hist_cont'+id).style('width','100%');
-		//.style('visibility','hidden')	
 		
 		this.exp_div.append('h4').text('Importance explanation')
 		this.box = new Boxplot('#exp_cont'+id,this.data);
@@ -29,11 +28,10 @@ class Explanation_container{
 			col = col.split('=')[0];
 		}
 		var self = this;
-		this.exp_div.style('visibility','hidden');
+
 		d3.json('get_hist_'+col+''+encode_params(decode_parameters()),function(data){
 			self.binary_histogram(data,col);
 		});
-		this.exp_div.style('visibility','visible');
 
 	}
 	
@@ -86,10 +84,6 @@ class Explanation_container{
 		var bin_1 = histogram(data['1'].map(function(g) {return g;}));
 		var max_bin_height_1 = d3.max(bin_1, function(d) { return d.length; });
 
-
-		console.log('max_bin_heights');
-		console.log(max_bin_height_0);
-		console.log(max_bin_height_1);
 
 		var y = d3.scaleLinear()
 			.domain([0,d3.max([max_bin_height_0,max_bin_height_1])])

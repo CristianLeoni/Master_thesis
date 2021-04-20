@@ -31,6 +31,7 @@ class Tree_classifier():
     
     def get_model(hyperparameters={}):
         hyperparameters = filter_arguments(hyperparameters,Tree_classifier.args.values)
+        hyperparameters['class_weight']='balanced'
         model = sklearn.tree.DecisionTreeClassifier(**hyperparameters)
         return model
     
@@ -129,6 +130,7 @@ class DecisionTree_classifier():
     def get_model(hyperparameters={}):
         hyperparameters = filter_arguments(hyperparameters,DecisionTree_classifier.args.values)
         model = DecisionTreeClassifier(**hyperparameters)
+        hyperparameters['class_weight']='balanced'
         return model
     
     def get_parameters_default():

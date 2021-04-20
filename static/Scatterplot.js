@@ -21,8 +21,8 @@ class Scatterplot{
 		
 		var margin = {right:0,top:0}
 		var text = {bottom: 30, left: 140},
-			width = 370,
-			height = 370 ;
+			width = 200,//370,
+			height = 200;//370 ;
 				
 		var p_height = height -margin.top,
 			p_width = width - margin.right;
@@ -30,10 +30,14 @@ class Scatterplot{
 
 		var div = d3
 			.select(this.id)
-			.append('div').style('display','inline-block').style('padding-bottom','30px');
+			.append('div')
+			.style('display','inline-block');
+			
 		div.append('h4').text(dr+' of '+dataset)
 
 		var svg = div
+			.style('padding-left','20px')
+			.style('padding-right','20px')
 			.append("svg")
 			.attr("width", width)
 			.attr("height", height)
@@ -147,13 +151,10 @@ class Scatterplot{
 						 && y_scale(p.y) <= d.y+d.height && d.y <= y_scale(p.y) 
 						 )
 						{
-							p.selected = 1;
-							return 'yellow'
-						} 
-						else {
-							p.selected = 0;
-							return "blue"
+							//Global variables in root page
+							p.selected = selected;
 						}
+						return select_color[p.selected];
 					});
 			}
 				
@@ -164,6 +165,14 @@ class Scatterplot{
 			console.log(svg.selectAll("circle").data().map(a => a.selected))
 
         });
+		
+		div.raise()
+		this.svg = svg;
+	}
+	
+	get_selection(){
+		console.log('get selected');
+		return this.svg.selectAll("circle").data().map((d)=>d.selected);
 	}
 }
 

@@ -10,7 +10,7 @@ class Int_parameter{
 		this.selected_value=default_value;
 		
 		if(!default_value){
-			this.selected_value='None';			
+			this.selected_value='None';
 		}
 		console.log(this.selected_value)
 		this.setup();
@@ -18,7 +18,7 @@ class Int_parameter{
 	}
 			
 	setup(){
-		var self=this;		
+		var self=this;
 		this.div = d3.select(this.id)
 			.append("div")
 			.style( 'float','left')
@@ -188,7 +188,6 @@ class Categorical_chooser{
 			.attr("type", "button")
 			.attr("value", this.selected_value)
 			.attr('class',"btn btn-secondary dropdown-toggle")
-
 		
 		var temp =this.div.append("div").attr('class',"dropdown-menu").style( 'display','none').style('background-color','rgba(255, 255, 255,1)').style('border', '1px solid black');
 
@@ -201,6 +200,7 @@ class Categorical_chooser{
 					else 
 						{
 							temp.style('display','block')
+							d3.select(temp).raise();
 						}
 			});
 

@@ -17,11 +17,14 @@
 		background-color: #f1f1f1;
 		padding-left: 20px;
 		overflow:auto;
-		
-		grid-gap: 10px;
-		grid-template-columns: repeat(6, 1fr);
-		grid-template-rows: repeat(auto-fill, 70px);
 	  }
+	  #param_grid{
+	  	grid-gap: 10px;
+		
+		grid-template-columns: repeat(6, 1fr);
+		grid-template-rows: repeat(auto-fill, auto-fill);
+		float:left;
+		}
 	  .menu_entry{
 		padding:5px;
 		background-color: #f1f1f1;
@@ -36,12 +39,15 @@
 		border:2px solid black;
 	  }
 </style>
-
+<!-- grid-template-columns: repeat(6, 1fr); -->
+		<!-- grid-template-rows: repeat(auto-fill, 70px); -->
 <body>
 	<div class="row">
 		<div id ='menu' class="leftcolumn">
 		</div>
 		<div id='details' class="rightcolumn">
+			<div id='performance_plot'></div>
+			<div id='param_grid'></div>
 		</div>
 		<button onclick="navigate()">Next</button>
 	</div>
@@ -78,19 +84,21 @@
 		}
 		var performance,parameter;
 		var url_params = decode_parameters();
-		console.log(url_params )
+		console.log(url_params)
 	  
 		var menu_details,menu;
 		
 		function callback(){
 			var selected = menu.get_selected()
 			if(selected == 'Overview'){
-				performance=new Performance('#details',[]);
+				<!-- performance=new Performance('#performance_plot',[]); -->
+				performance.set_classifiers('*')
 				parameter.hide();
 				return;
 			}
 			parameter.draw()
-			performance.hide()
+			performance.set_classifiers(selected)
+			<!-- performance.hide() -->
 			url_params['classifier']=selected;
 			d3.json('/get_classifier_'+selected,function(data){
 				parameter.update(data);
@@ -100,9 +108,9 @@
 			d.unshift('Overview')
 			menu = new Menu('#menu',d,callback);
 		})
-		parameter = new Parameter_grid('#details',[]);
+		parameter = new Parameter_grid('#param_grid',[]);
 		parameter.hide();
-		performance = new Performance('#details',[]);
+		performance = new Performance('#performance_plot',[]);
 		
 
 
