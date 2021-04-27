@@ -11,8 +11,8 @@ class Int_parameter{
 		
 		if(!default_value){
 			this.selected_value='None';
-		}
-		console.log(this.selected_value)
+		}		
+
 		this.setup();
 		this.draw();
 	}
@@ -65,6 +65,9 @@ class Int_parameter{
 			}
 			this.selected_value = parsed;
 			this.changed = true;
+			if(this.listener){
+				this.listener.event_update()
+			}
 		}
 	}
 
@@ -72,6 +75,12 @@ class Int_parameter{
 		return this.selected_value;
 	}
 	
+	set_listener(listener){
+		this.listener = listener;
+		console.log('this.listener');
+		console.log(this.listener);
+		return this;
+	}
 }
 
 class Float_parameter{
@@ -88,7 +97,6 @@ class Float_parameter{
 		if(!default_value){
 			this.selected_value='None';			
 		}
-		console.log(this.selected_value)
 		this.setup();
 		this.draw();
 	}
@@ -141,6 +149,9 @@ class Float_parameter{
 			}
 			this.selected_value = parsed;
 			this.changed = true;
+			if(this.listener){
+				this.listener.event_update()
+			}
 		}
 	}
 
@@ -148,22 +159,29 @@ class Float_parameter{
 		return this.selected_value;
 	}
 	
+	set_listener(listener){
+		this.listener = listener;
+		return this;
+	}
+	
 }
 
 class Categorical_chooser{
 	
-	constructor(id,name,default_value,values){
+	constructor(id,name,default_value,values,update_function){
 		console.log('name+default_value+values')
 
 		console.log(name+default_value+values)
 		this.id = id,
 		this.name = name;
 		this.changed = false;
-
 		this.selected_value = default_value;
 		this.values = values;
-
+		this.update_function = update_function;
+		
 		this.draw();
+
+
 	}
 			
 	draw(){
@@ -209,42 +227,59 @@ class Categorical_chooser{
 			.enter()
 			.append('div')			
 			.text((d)=>d)
-			.on("click", function(d){self.changed = true;self.selected_value = d; temp.attr('display','none');button.attr('value',d);temp.style('display','none')});				
+			.on("click", function(d){
+				self.changed = true;
+				if(self.listener){
+					self.listener.event_update();
+				}
+				self.selected_value = d; 
+				temp.attr('display','none');
+				button.attr('value',d);
+				temp.style('display','none');
+				});				
 	}
 	
 	selected(){
 		return this.selected_value;
 	}
 	
+	set_listener(listener){
+		this.listener = listener;
+		return this;
+	}
+	
 }
 
 class Parameter_grid{
-	constructor(id,data){
+	constructor(id,data,update_function){
 		this.parameters = []
 		this.id = id;
 		this.data = data;
-		this.draw()
+		this.update_function = update_function;
 	}
 	
 	update(data){
 		this.data = data;
 		this.parameters = []
 		d3.select(this.id).style('display','grid').selectAll('div').remove()
-
 		this.draw();
 	}
 	
 	draw(){
 		var self = this;
 		this.data.forEach(function(d){
+					console.log(d)
 					if(d[0]==='categorical'){
-						self.parameters.push(new Categorical_chooser(self.id,d[1],d[2],d[3]));
+						console.log('categorical')
+						self.parameters.push(new Categorical_chooser(self.id,d[1],d[2],d[3]).set_listener(self));
 					}
 					if(d[0]==='int'){
-						self.parameters.push(new Int_parameter(self.id,d[1],d[2]));
+						console.log('int')
+						self.parameters.push(new Int_parameter(self.id,d[1],d[2]).set_listener(self));
 					}
 					if(d[0]==='float'){
-						self.parameters.push(new Float_parameter(self.id,d[1],d[2],d[3]));
+						console.log('float')
+						self.parameters.push(new Float_parameter(self.id,d[1],d[2],d[3]).set_listener(self));
 					}
 				});
 	}
@@ -257,11 +292,21 @@ class Parameter_grid{
 				selected.push([d.name,d.selected()])
 			}
 		});
-		console.log(selected);
 		return selected;
 	}
 	
 	hide(){
-		d3.select(this.id).style('display',"inline").selectAll('div').remove();
+		d3.select(this.id).style('visibility',"hidden").selectAll('div').remove();
+	}
+	
+	show(){
+		d3.select(this.id).style('visibility',"visible").selectAll('div').remove();
+	}
+	
+	event_update(){
+		console.log('good udpate')
+		if(this.update_function){
+			this.update_function();
+		}
 	}
 }

@@ -9,20 +9,30 @@ function change(Perf,metrics){
 		}
 		console.log('metrics not null')
 		console.log(Perf.get_classifiers())
-		d3.csv('/get_classifier_performances_'+metrics+'-'+Perf.get_classifiers()+encode_params(url_params),function(data){
-			console.log('classifier performances')
-			console.log(data)
-			Perf.draw(data);
-		})
+		
+		if(url_params['classifier_params']=='[]' || Perf.no_default==true || Perf.classifiers == '*'){
+			d3.csv('/get_classifier_performances_'+metrics+'-'+Perf.get_classifiers()+encode_params(url_params),function(data){
+				console.log('classifier performances')
+				console.log(data)
+				Perf.draw(data);
+			})
+		}else {
+			d3.csv('/compare_default_'+metrics+'-'+Perf.get_classifiers()+encode_params(url_params),function(data){
+				console.log('classifier performances')
+				console.log(data)
+				Perf.draw(data);
+			})
+		}
 	}
 
 class Performance{
 	
-	constructor(id,data,classifiers='*',w=560,h=400){
+	constructor(id,data,classifiers='*',no_default = false,w=560,h=400){
 		this.id = id;
 		this.data = data;
-
 		
+		
+		this.no_default = no_default;
 		var self = this;
 		this.w=+w;
 		this.h=+h;
@@ -33,6 +43,10 @@ class Performance{
 		});
 
 
+	}
+	
+	update(){
+		change(this,this.Checkbox.selected());
 	}
 
 	draw(data){
@@ -159,7 +173,10 @@ class Checkbox_menu{
 			.attr('color','red')
 			.attr('name', this.id)
 			.attr('value', function(d, i) {return d;})
-			.on("change",function(d,i) {change(self.Perf,self.selected());});
+			.on("change",function(d,i) {
+				//if(self.selected().length>0)
+				change(self.Perf,self.selected());
+				});
 
 		spans.append("label")
 			.text(function(d) {return d;});

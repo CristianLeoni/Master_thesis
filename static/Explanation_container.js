@@ -11,7 +11,7 @@ class Explanation_container{
 		//.style('width','max-content').style('padding','10px')
 		this.exp_div = d3.select(this.id).append('div').attr('id','exp_cont'+id).style('padding','30px');//.style('float','right')
 		//.style('width','100%');		
-		this.hist_div = d3.select(this.id).append('div').attr('id','hist_cont'+id).style('width','100%');
+		this.hist_div = d3.select(this.id).append('div').attr('id','hist_cont'+id).style('width','100%').style('border-top','2px solid black');
 		
 		this.exp_div.append('h4').text('Importance explanation')
 		this.box = new Boxplot('#exp_cont'+id,this.data);

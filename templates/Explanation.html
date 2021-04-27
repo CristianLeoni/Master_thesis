@@ -8,6 +8,7 @@
 		}
 		#explanation_plot{
 			text-align:center;
+			border:2px solid black;
 		}
 		.selection {
 		  stroke          : gray;
@@ -47,9 +48,10 @@
 	<script src="{{ url_for('static', filename='Performance.js') }}"></script>
 	<script src="{{ url_for('static', filename='Scatterplot.js') }}"></script>
 	<script src="{{ url_for('static', filename='Correlation.js') }}"></script>
+	<script src="{{ url_for('static', filename='Navigation.js') }}"></script>
 	
-	<div id='summary_plot' style='padding-left:15px'>		
-		<div class='contained' style='border: 1px solid black;'>
+	<div id='summary_plot'>		
+		<div class='contained' style='border: 2px solid black;'>
 			<div id='scatter_params' class ='contained' height='fill'>
 				<h5>Selected:</h5>
 				<input onClick="checkInput();" type="number" id="quantity" name="quantity" min="0" max="1" value ="1"> 
@@ -57,11 +59,11 @@
 				</form>
 				<button type="button" onClick="update_selection()">Update selection</button> 
 			</div>
-			<div id='scatter'class ='contained' ></div>
+			<div id='scatter'class ='contained' style='width:26%;'></div>
 		</div>
-		<div id='corr' class ='contained' style='border: 1px solid black;'></div>
-		<div class ='contained' style='border: 1px solid black;'>
-			<h4 id='classifier_title'>Classifier performance</h4>
+		<div id='corr' class ='contained' style='border: 2px solid black;width:24%;'></div>
+		<div class ='contained' style='border: 2px solid black;width:50%'>
+			<h5 id='classifier_title'>Classifier performance</h5>
 			<div id='performace_plot' ></div>
 		</div>
 	</div>
@@ -123,7 +125,8 @@
 		}
 	
 		var url_params = decode_parameters();
-
+		create_navigation();
+		
 		d3.select('#classifier_title').text(url_params['classifier']+' performace')
 
 		if(url_params['performances']){
@@ -147,7 +150,7 @@
 				new Explanation_container('#explanation_plot',data);
 			});
 		}
-		new Performance('#performace_plot',[],url_params['classifier'],560,200);
+		new Performance('#performace_plot',[],url_params['classifier'],true,550,200);
     </script>
 </body>
 

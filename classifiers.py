@@ -30,7 +30,7 @@ class Tree_classifier():
                     'min_impurity_decrease':0.0, 'min_impurity_split':None, 'class_weight':None, 'ccp_alpha':0.0}
     
     def get_model(hyperparameters={}):
-        hyperparameters = filter_arguments(hyperparameters,Tree_classifier.args.values)
+        hyperparameters = filter_arguments(hyperparameters,list(Tree_classifier.args.keys()))
         hyperparameters['class_weight']='balanced'
         model = sklearn.tree.DecisionTreeClassifier(**hyperparameters)
         return model
@@ -66,7 +66,7 @@ class SVC_classifier():
     }
     
     def get_model(hyperparameters={}):
-        hyperparameters = filter_arguments(hyperparameters,SVC_classifier.args.values)
+        hyperparameters = filter_arguments(hyperparameters,list(SVC_classifier.args.keys()))
         hyperparameters['probability']=True
         model = make_pipeline(StandardScaler(), SVC(**hyperparameters))
         return model
@@ -94,7 +94,7 @@ class Knn_classifier():
         }
     
     def get_model(hyperparameters={}):
-        hyperparameters = filter_arguments(hyperparameters,Knn_classifier.args.values)
+        hyperparameters = filter_arguments(hyperparameters,list(Knn_classifier.args.keys()))#Knn_classifier.args.values)
         model = sklearn.neighbors.KNeighborsClassifier(**hyperparameters)
         return model
     
@@ -128,7 +128,7 @@ class DecisionTree_classifier():
     }
     
     def get_model(hyperparameters={}):
-        hyperparameters = filter_arguments(hyperparameters,DecisionTree_classifier.args.values)
+        hyperparameters = filter_arguments(hyperparameters,list(DecisionTree_classifier.args.keys()))
         model = DecisionTreeClassifier(**hyperparameters)
         hyperparameters['class_weight']='balanced'
         return model
@@ -148,7 +148,7 @@ class Naive_Bayes_classifier():
     }
     
     def get_model(hyperparameters={}):
-        hyperparameters = filter_arguments(hyperparameters,Naive_Bayes_classifier.args.values)
+        hyperparameters = filter_arguments(hyperparameters,list(Naive_Bayes_classifier.args.keys()))
         model = GaussianNB(**hyperparameters)
         return model
     

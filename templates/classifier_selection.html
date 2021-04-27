@@ -17,13 +17,20 @@
 		background-color: #f1f1f1;
 		padding-left: 20px;
 		overflow:auto;
+		padding-top:10px;
+		border:2px solid black;
+
 	  }
 	  #param_grid{
+		border-top:2px solid black;
+		border-bottom:2px solid black;
 	  	grid-gap: 10px;
-		
 		grid-template-columns: repeat(6, 1fr);
 		grid-template-rows: repeat(auto-fill, auto-fill);
 		float:left;
+		padding :10px;
+		text-align:center;
+		width:97%;
 		}
 	  .menu_entry{
 		padding:5px;
@@ -33,31 +40,36 @@
 	  }
 	button{
 		float: right;
-		padding:5px;
 		background-color: #f1f1f1;
 		border-radius:10px;
+		padding:5px;
 		border:2px solid black;
 	  }
 </style>
 <!-- grid-template-columns: repeat(6, 1fr); -->
 		<!-- grid-template-rows: repeat(auto-fill, 70px); -->
 <body>
+
 	<div class="row">
 		<div id ='menu' class="leftcolumn">
 		</div>
 		<div id='details' class="rightcolumn">
-			<div id='performance_plot'></div>
+			<div id='performance_plot' style='height : 420px'></div>
 			<div id='param_grid'></div>
+			<div id='text_info'>
+				<h5 style='float:left'>sas</h5>
+			</div>
 		</div>
 		<button onclick="navigate()">Next</button>
 	</div>
 
 	
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.2.2/d3.min.js"></script>
-  <script src="{{ url_for('static', filename='Menu.js') }}"></script>
-  <script src="{{ url_for('static', filename='Parameters.js') }}"></script>
-    <script src="{{ url_for('static', filename='Performance.js') }}"></script>
-  <script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.2.2/d3.min.js"></script>
+	<script src="{{ url_for('static', filename='Menu.js') }}"></script>
+	<script src="{{ url_for('static', filename='Parameters.js') }}"></script>
+	<script src="{{ url_for('static', filename='Performance.js') }}"></script>
+	<script src="{{ url_for('static', filename='Navigation.js') }}"></script>
+	<script>
   
   		function encode_params(params){
 			var encoded ='?'
@@ -84,6 +96,8 @@
 		}
 		var performance,parameter;
 		var url_params = decode_parameters();
+		create_navigation();
+		url_params['classifier_params']='[]';
 		console.log(url_params)
 	  
 		var menu_details,menu;
@@ -99,16 +113,25 @@
 			parameter.draw()
 			performance.set_classifiers(selected)
 			<!-- performance.hide() -->
+			parameter.show();
 			url_params['classifier']=selected;
 			d3.json('/get_classifier_'+selected,function(data){
 				parameter.update(data);
 			});
 		}
+		
+		function parameter_update(){
+			console.log('parameter update');
+			url_params['classifier_params']='['+parameter.get_selected()+']';
+			performance.update();
+		}
+		
+		
 		d3.json('/get_classifier_*',function(d){
 			d.unshift('Overview')
 			menu = new Menu('#menu',d,callback);
 		})
-		parameter = new Parameter_grid('#param_grid',[]);
+		parameter = new Parameter_grid('#param_grid',[],parameter_update);
 		parameter.hide();
 		performance = new Performance('#performance_plot',[]);
 		

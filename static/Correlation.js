@@ -47,7 +47,7 @@ class Correlation{
 		var map_size = this.grid.length,
 			tile_size_x = (+svg.style("width").slice(0,-2))/map_size,
 			tile_size_y = (+svg.style("height").slice(0,-2)+text_size)/map_size,
-			tile_size = Math.max(Math.max(tile_size_x,tile_size_y),25);
+			tile_size = Math.min(Math.max(tile_size_x,tile_size_y,7),40);
 
 		var offset = tile_size;
 		
@@ -83,15 +83,18 @@ class Correlation{
 			.attr('height', tile_size )
 			.attr("transform",(d,i)=>'translate('+(i*offset)+',0)');
 	
-		myimage_grid
-			.selectAll('g')
-			.data((d)=>d)
-			.enter()
-			.append('text')
-			.attr('text-anchor', 'middle')
-			.attr("transform",(d,i)=>'translate('+(i*offset+tile_size/2)+','+(tile_size/2+5)+')')
-			.text(function(d) { return d; })
-			.style("font-size", tile_size* 0.5+"px");
+		if(tile_size>12){
+			myimage_grid
+				.selectAll('g')
+				.data((d)=>d)
+				.enter()
+				.append('text')
+				.attr('text-anchor', 'middle')
+				.attr("transform",(d,i)=>'translate('+(i*offset+tile_size/2)+','+(tile_size/2+5)+')')
+				.text(function(d) { return d; })
+				.style("font-size", tile_size* 0.5+"px");
+		}
+
 
 
 			

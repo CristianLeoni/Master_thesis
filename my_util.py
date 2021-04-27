@@ -1,3 +1,5 @@
+import numpy as np
+
 def filter_arguments(hyperparameters,accepted):
     newDict = dict()
     # Iterate over all the items in dictionary and filter items which has even keys
@@ -16,7 +18,9 @@ def decode_parameters(p,types):
     
     ret = {}
     for p,v in parameters:
-        if(isinstance(types[p],list)):
+        if(not p in types.keys()):
+            pass            
+        elif(isinstance(types[p],list)):
             ret[p]=v
         elif(types[p]=='int'):
             ret[p]=int(v)

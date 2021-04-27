@@ -33,7 +33,7 @@ class Scatterplot{
 			.append('div')
 			.style('display','inline-block');
 			
-		div.append('h4').text(dr+' of '+dataset)
+		div.append('h5').text(dr+' of '+dataset)
 
 		var svg = div
 			.style('padding-left','20px')
