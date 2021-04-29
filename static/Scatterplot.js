@@ -1,8 +1,10 @@
 class Scatterplot{
-	constructor(id,data,dataset,dr){
+	constructor(id,data,dataset,dr,width=200,height=200){
 		console.log('SCATTER')
 		console.log('dataset',dataset)
 		this.id = id;
+		this.width = +width;
+		this.height = +height;
 		this.setup(data,dataset,dr);
 	}
 	
@@ -18,11 +20,10 @@ class Scatterplot{
 	
 	setup(data,dataset,dr){
 		var self = this;
-		
 		var margin = {right:0,top:0}
 		var text = {bottom: 30, left: 140},
-			width = 200,//370,
-			height = 200;//370 ;
+			width = +this.width,//370,
+			height = +this.height;//370 ;
 				
 		var p_height = height -margin.top,
 			p_width = width - margin.right;
@@ -152,7 +153,7 @@ class Scatterplot{
 						 )
 						{
 							//Global variables in root page
-							p.selected = selected;
+							return select_color[selected];
 						}
 						return select_color[p.selected];
 					});
@@ -160,6 +161,59 @@ class Scatterplot{
 				
 		})
 		.on( "mouseup", function() {
+			
+			var s = svg.select( "rect.selection");
+
+            if( !s.empty()) {
+                var p = d3.mouse( this);
+				
+				var d = {
+                        x       : +s.attr( "x"),
+                        y       : +s.attr( "y"),
+                        width   : +s.attr( "width"),
+                        height  : +s.attr( "height")
+                    };
+					
+				var move = {
+                        x : p[0] - d.x,
+                        y : p[1] - d.y
+                }
+			
+				if( move.x < 1 || (move.x*2<d.width)) {
+					d.x = p[0];
+                    d.width -= move.x;
+                } else {
+                    d.width = move.x;       
+                }
+
+                if( move.y < 1 || (move.y*2<d.height)) {
+                    d.y = p[1];
+                    d.height -= move.y;
+                } else {
+                    d.height = move.y;       
+                }				
+				
+				s
+					.attr('x'  , d.x)
+					.attr('y'  , d.y)
+					.attr('width'  , d.width)
+					.attr('height'  , d.height);
+
+
+				svg
+					.selectAll("circle")
+					.style("fill", function(p,i){
+						if(
+						 x_scale(p.x) <= d.x+d.width && d.x <= x_scale(p.x)  
+						 && y_scale(p.y) <= d.y+d.height && d.y <= y_scale(p.y) 
+						 )
+						{
+							//Global variables in root page
+							p.selected = selected;
+						}
+						return select_color[p.selected];
+					});
+			}
 			// remove selection frame
 			svg.selectAll("rect.selection").remove();
 			console.log(svg.selectAll("circle").data().map(a => a.selected))
@@ -168,6 +222,13 @@ class Scatterplot{
 		
 		div.raise()
 		this.svg = svg;
+	}
+	
+	update(data,dataset,dr){
+		d3.select(this.id)
+			.select('div').remove();			
+		this.setup(data,dataset,dr)
+			
 	}
 	
 	get_selection(){

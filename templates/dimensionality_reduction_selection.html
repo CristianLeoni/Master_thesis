@@ -18,11 +18,14 @@
 		padding-left: 20px;
 		overflow:auto;
 		
+
+	  }
+	.param_grid{
 		display: grid;
 		grid-gap: 10px;
 		grid-template-columns: repeat(6, 1fr);
 		grid-template-rows: repeat(auto-fill, 70px);
-	  }
+	}
 	.menu_entry{
 		padding:5px;
 		background-color: #f1f1f1;
@@ -43,6 +46,9 @@
 		<div id ='menu' class="leftcolumn">
 		</div>
 		<div id='details' class="rightcolumn">
+			<div id='scatter'></div>
+			<div id='params' class="param_grid"></div>
+
 		</div>
 		<button onclick="navigate()">Next</button>
 	</div>
@@ -53,7 +59,11 @@
 	<script src="{{ url_for('static', filename='Dataset_details.js') }}"></script>
 	<script src="{{ url_for('static', filename='Parameters.js') }}"></script> 
 	<script src="{{ url_for('static', filename='Navigation.js') }}"></script>
+	<script src="{{ url_for('static', filename='Scatterplot.js') }}"></script>
   <script>
+		selected = 1;
+		select_color=['blue','blue'];
+
   
   		function encode_params(params){
 			var encoded ='?'
@@ -77,14 +87,26 @@
 		 
 		function navigate(){
 			url_params['D_R_params']='['+parameters.get_selected()+']';
+			delete url_params['selection'];
 			window.location.href = '/test_scatter_flask'+encode_params(url_params)
 		}
 	
 		var url_params = decode_parameters();
+		url_params['D_R_params'] = '[]';
+		url_params['D_R'] = 'pca';
+		console.log('url_params[selection]')
+		console.log(url_params['selection'])
+		if(!url_params['selection']){
+			console.log('No selection')
+			url_params['selection'] = '-1';
+		}
+		console.log(url_params['selection'])
+
+
 		create_navigation();
 		console.log(url_params )
 	  
-		var parameters,menu;
+		var parameters,menu,scatterplot;
 		function callback(){
 			var selected = menu.get_selected()
 			url_params['D_R']=selected;
@@ -92,12 +114,32 @@
 			d3.json('/get_DR_'+selected,function(data){
 				parameters.update(data);
 			});
+			
+			d3.csv('http:\\scatter_d3'+encode_params(url_params),function(data){
+				scatter_plot.update(data,url_params['dataset'],url_params['D_R']);
+			});
+		}
+		
+		function param_change(){
+			var selected = menu.get_selected()
+			url_params['D_R']=selected;
+			url_params['D_R_params'] = parameters.get_selected();
+		
+			
+			d3.csv('http:\\scatter_d3'+encode_params(url_params),function(data){
+				scatter_plot.update(data,url_params['dataset'],url_params['D_R']);
+			});
 		}
 		
 		d3.json('/get_DR_*',function(d){
 			menu = new Menu('#menu',d,callback);
-			parameters = new Parameter_grid('#details',[])
+			parameters = new Parameter_grid('#params',[],param_change)
 		})
+		
+		d3.csv('http:\\scatter_d3'+encode_params(url_params),function(data){
+			console.log(url_params['D_R']);
+			scatter_plot = new Scatterplot('#scatter',data,url_params['dataset'],url_params['D_R']);			
+		});
 
   </script>
 </body>

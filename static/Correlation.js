@@ -28,7 +28,7 @@ class Correlation{
 			.style('height',200+'px')
 			.style('display','inline-block')
 			
-		root.append('h4').text('Correlation matrix');
+		root.append('h5').text('Correlation matrix');
 		this.div = root.append('div')
 			.style('padding','0')
 			.style('margin','0')
@@ -47,7 +47,7 @@ class Correlation{
 		var map_size = this.grid.length,
 			tile_size_x = (+svg.style("width").slice(0,-2))/map_size,
 			tile_size_y = (+svg.style("height").slice(0,-2)+text_size)/map_size,
-			tile_size = Math.min(Math.max(tile_size_x,tile_size_y,7),40);
+			tile_size = Math.min(Math.max(tile_size_x,tile_size_y,7),30);
 
 		var offset = tile_size;
 		

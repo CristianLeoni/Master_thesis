@@ -135,8 +135,7 @@
 
 		d3.csv('http:\\scatter_d3'+encode_params(url_params),function(data){
 			console.log(url_params['D_R']);
-			scatter_plot = new Scatterplot('#scatter',data,url_params['dataset'],url_params['D_R']);
-			
+			scatter_plot = new Scatterplot('#scatter',data,url_params['dataset'],url_params['D_R']);			
 		});
 		
 		d3.csv('http:\\corr_matrix'+encode_params(url_params),function(data){
