@@ -98,6 +98,7 @@
 		var url_params = decode_parameters();
 		create_navigation();
 		url_params['classifier_params']='[]';
+		url_params['classifier']='Knn';
 		console.log(url_params)
 	  
 		var menu_details,menu;
@@ -125,18 +126,17 @@
 			url_params['classifier_params']='['+parameter.get_selected()+']';
 			performance.update();
 		}
-		
-		
-		d3.json('/get_classifier_*',function(d){
-			d.unshift('Overview')
-			menu = new Menu('#menu',d,callback);
-		})
+				
 		parameter = new Parameter_grid('#param_grid',[],parameter_update);
 		parameter.hide();
 		performance = new Performance('#performance_plot',[]);
 		
-
-
+		d3.json('/get_classifier_*',function(d){
+			d.unshift('Overview')
+			menu = new Menu('#menu',d,callback);
+			menu.select(d[0]);
+		})
+		
   </script>
 </body>
 </html>

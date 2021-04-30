@@ -25,8 +25,7 @@ class Menu{
 				self.select(d);
 			})
 			.append('p')
-			.text((d)=>d)
-			
+			.text((d)=>d)			
 	}
 	
 	select(d){

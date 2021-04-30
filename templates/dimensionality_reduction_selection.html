@@ -17,10 +17,12 @@
 		background-color: #f1f1f1;
 		padding-left: 20px;
 		overflow:auto;
-		
-
+		border:2px solid black;
 	  }
 	.param_grid{
+		border-top:2px solid black;
+		padding-top: 20px;
+		margin-top: 20px;
 		display: grid;
 		grid-gap: 10px;
 		grid-template-columns: repeat(6, 1fr);
@@ -46,7 +48,7 @@
 		<div id ='menu' class="leftcolumn">
 		</div>
 		<div id='details' class="rightcolumn">
-			<div id='scatter'></div>
+			<div id='scatter' style='text-align:center;'></div>
 			<div id='params' class="param_grid"></div>
 
 		</div>
@@ -106,7 +108,8 @@
 		create_navigation();
 		console.log(url_params )
 	  
-		var parameters,menu,scatterplot;
+		var parameters,menu;
+		var scatter_plot;
 		function callback(){
 			var selected = menu.get_selected()
 			url_params['D_R']=selected;
@@ -116,14 +119,21 @@
 			});
 			
 			d3.csv('http:\\scatter_d3'+encode_params(url_params),function(data){
-				scatter_plot.update(data,url_params['dataset'],url_params['D_R']);
+				console.log('scatter_plot')
+				console.log(scatter_plot)
+				if(!scatter_plot){
+					scatter_plot = new Scatterplot('#scatter',data,url_params['dataset'],url_params['D_R']);
+				}
+				else{
+					scatter_plot.update(data,url_params['dataset'],url_params['D_R']);
+				}
 			});
 		}
 		
 		function param_change(){
 			var selected = menu.get_selected()
 			url_params['D_R']=selected;
-			url_params['D_R_params'] = parameters.get_selected();
+			url_params['D_R_params'] = '['+parameters.get_selected()+']';
 		
 			
 			d3.csv('http:\\scatter_d3'+encode_params(url_params),function(data){
@@ -134,12 +144,8 @@
 		d3.json('/get_DR_*',function(d){
 			menu = new Menu('#menu',d,callback);
 			parameters = new Parameter_grid('#params',[],param_change)
+			menu.select(d[0]);
 		})
-		
-		d3.csv('http:\\scatter_d3'+encode_params(url_params),function(data){
-			console.log(url_params['D_R']);
-			scatter_plot = new Scatterplot('#scatter',data,url_params['dataset'],url_params['D_R']);			
-		});
 
   </script>
 </body>

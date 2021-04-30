@@ -3,10 +3,12 @@ class Histogram{
 	constructor(id,data){
 		this.id = id;
 		this.data = data;
+		this.listeners = [];
 		this.draw()
 		}
 		
 	draw(){
+		var self = this;
 		// set the dimensions and margins of the graph
 		var margin = {top: 0, right: 30, bottom: 30, left: 0},
 			width = 460 - margin.left - margin.right,
@@ -100,6 +102,34 @@ class Histogram{
 		// var rectsArr = Array.prototype.slice.call(svg.selectAll("rect")._groups[0])
 		// rectsArr.sort((b,a)=>a.__data__.length-b.__data__.length).forEach((r)=>d3.select(r).raise())
 		
+		
+	
+		//Invisible on click 
+	
+		svg.append('g')
+			.selectAll('rect')
+			.data(bins.map((b)=>b.key))
+			.enter()
+			.append("rect")
+				.attr("y", (d)=>outer_scale(d))
+				.attr("x", 0)
+				.attr("width", width)
+				.attr("height", (d)=>outer_scale.bandwidth()+1)
+				.attr('fill','black')
+				.style("opacity", 0)
+				.on('click',function(d){
+					console.log(d);
+					self.trigger_change(d)
+				});
+	}
+
+
+	trigger_change(val){
+		this.listeners.forEach((l)=>l.listener_change(val))
+	}
+	
+	listen(obj){
+		this.listeners.push(obj);
 	}
 }
 

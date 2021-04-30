@@ -17,6 +17,7 @@ class Explanation_container{
 		this.box = new Boxplot('#exp_cont'+id,this.data);
 		this.hist = new Histogram('#exp_cont'+id,this.data);
 		this.box.listen(this)
+		this.hist.listen(this)
 	}
 	
 	listener_change(value){
@@ -61,7 +62,7 @@ class Explanation_container{
 			.attr("width", width)
 			.attr("height", height)
 			.attr("fill", "white")
-			.on('click',function(){console.log('remove');root.remove()});
+			// .on('click',function(){console.log('remove');root.remove()});
 				
 		var x_range_0 = d3.extent(data['0'],(s)=>+s)
 		var x_range_1 = d3.extent(data['1'],(s)=>+s)
@@ -128,6 +129,13 @@ class Explanation_container{
 		  .call(d3.axisBottom(x));
 
 		svg.on('click',()=>d3.select(svg).remove())
+		
+		svg.append("rect")
+			.attr("width", width)
+			.attr("height", height)
+			.attr("fill", "transparent")
+			.on('click',function(){console.log('remove');root.remove()});
+
 	}
 	
 }

@@ -40,6 +40,7 @@ class Performance{
 			self.Checkbox = new Checkbox_menu(self.id,d,self)
 			self.set_classifiers(classifiers)
 			self.draw([])	
+			change(self,self.Checkbox.selected());
 		});
 
 
@@ -173,6 +174,7 @@ class Checkbox_menu{
 			.attr('color','red')
 			.attr('name', this.id)
 			.attr('value', function(d, i) {return d;})
+			.attr('checked',true)
 			.on("change",function(d,i) {
 				//if(self.selected().length>0)
 				change(self.Perf,self.selected());
@@ -181,7 +183,7 @@ class Checkbox_menu{
 		spans.append("label")
 			.text(function(d) {return d;});
 			
-		spans.append('br');
+		spans.append('br');		
 	}
 
 	selected(){
