@@ -90,24 +90,23 @@
 		function navigate(){
 			url_params['D_R_params']='['+parameters.get_selected()+']';
 			delete url_params['selection'];
+			
 			window.location.href = '/test_scatter_flask'+encode_params(url_params)
 		}
 	
 		var url_params = decode_parameters();
+		
+		create_navigation();
+
+		
 		url_params['D_R_params'] = '[]';
 		url_params['D_R'] = 'pca';
-		console.log('url_params[selection]')
-		console.log(url_params['selection'])
+
 		if(!url_params['selection']){
 			console.log('No selection')
 			url_params['selection'] = '-1';
-		}
-		console.log(url_params['selection'])
-
-
-		create_navigation();
-		console.log(url_params )
-	  
+		}	  
+		
 		var parameters,menu;
 		var scatter_plot;
 		function callback(){

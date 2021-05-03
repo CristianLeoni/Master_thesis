@@ -13,20 +13,23 @@ function create_navigation(){
 		.data(nav)
 		.enter()
 		.insert('button','button')
-		.text((d)=>d[0])
+		.text((d,i)=>i+1+') '+d[0])
 		.on('click',function(d){
 			if(d[0]=='Dataset' || url_params[d[2]])
 				window.location.href = d[1]+encode_params(url_params)})
 		.style('float','right')
 		.style('padding','5px')
+		.style('margin-right','1.2px')
 		.style('background-color',function(d){
+			console.log(url_params[d[2]]);
 			if(d[0]=='Dataset' || url_params[d[2]])
 				return 'white'//#f1f1f1
 			else
 				return 'black'
 			})
 		.style('border-radius','10px')
-		.style('border','2px solid black');
+		.style('border','2px solid black')
+	
 }
 
 
