@@ -86,6 +86,7 @@
 		d3.json('/datasets_entries',function(d){
 			menu = new Menu('#menu',d,callback);
 			menu_details = new Dataset_details('#details',[]);
+			menu.select(d[0]);
 		})
 
   </script>
