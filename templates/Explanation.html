@@ -70,6 +70,12 @@
 	
 	<div id='explanation_plot'/></div>
 	
+	<div style='text-align:right;border:2px solid black;'>
+		<label for="user_name">User_id:</label>
+		<input id='user_name'></input>
+		<button onClick='submit_results()'>Submit_results</button>
+	</div>
+	
     <script>
 	
 	
@@ -78,6 +84,29 @@
 		selected = 1;
 		select_color=['blue','yellow'];
 		var scatter_plot;
+		
+		function submit_results(){
+			var user_id =document.getElementById("user_name").value;
+			
+			if (user_id.length==0) {
+				window.alert("Please input your user_id");
+				return;
+			}
+			url_params['user_id'] = user_id;
+
+			
+			d3.json('submit_results'+encode_params(url_params),function(err,d){
+				console.log(d)
+				if (err) {
+					window.alert("An error occured when processing the data\n"+err);
+					return;
+				}
+				url_params = new Object();				
+				url_params['user_id'] = document.getElementById("user_name").value;
+				window.alert("Thanks for your input! :D");
+				window.location.href = '/'+encode_params(url_params)
+			});
+		}
 		
 		function checkInput(){
 			console.log('AAAARGH');
@@ -128,11 +157,11 @@
 		create_navigation();
 		
 		d3.select('#classifier_title').text(url_params['classifier']+' performace')
-
-		if(url_params['performances']){
-			url_params['performances'].split(',').forEach((p)=>new Performance_wheel('#performace_plot',+p))
+		
+		if(url_params['user_id']){
+			document.getElementById("user_name").value = url_params['user_id'];
 		}
-
+		
 		d3.csv('http:\\scatter_d3'+encode_params(url_params),function(data){
 			console.log(url_params['D_R']);
 			scatter_plot = new Scatterplot('#scatter',data,url_params['dataset'],url_params['D_R']);			
