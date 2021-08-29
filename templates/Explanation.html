@@ -1,0 +1,209 @@
+<!doctype html>
+<html>
+<head>
+	<style>
+		div{
+			text-align:center;
+			background-color: #f1f1f1;
+		}
+		#explanation_plot{
+			text-align:center;
+			border:2px solid black;
+		}
+		.selection {
+		  stroke          : gray;
+		  stroke-width    : 1px;
+		  stroke-dasharray: 4px;
+		  stroke-opacity  : 0.5;
+		  fill            : blue;
+		  fill-opacity	  : 0.2;
+		}
+		#summary_plot{
+			display: flex;
+			align-items: center;
+		}
+		
+		#scatter_params{
+		  column-count: 1;
+		  column-gap: 20px;
+		}
+		#scatter_params.*{
+			float: left;
+		}
+		
+		.contained{	
+			float: left;
+			height : 267px;
+			align:center;
+			display:inline-block;
+		}
+	</style>
+</head>
+<body>
+	<script src="https://d3js.org/d3.v4.min.js"></script>
+	<script src="https://d3js.org/d3-brush.v2.min.js"></script>
+	<script src="{{ url_for('static', filename='Explanation_container.js') }}"></script>
+	<script src="{{ url_for('static', filename='Histogram.js') }}"></script>
+	<script src="{{ url_for('static', filename='Boxplot.js') }}"></script>
+	<script src="{{ url_for('static', filename='Performance.js') }}"></script>
+	<script src="{{ url_for('static', filename='Scatterplot.js') }}"></script>
+	<script src="{{ url_for('static', filename='Correlation.js') }}"></script>
+	<script src="{{ url_for('static', filename='Navigation.js') }}"></script>
+	
+	<div id='summary_plot'>		
+		<div class='contained' style='border: 2px solid black;'>
+			<div id='scatter_params' class ='contained' height='fill'>
+				<h5>Selected:</h5>
+				<input onClick="checkInput();" type="number" id="quantity" name="quantity" min="0" max="1" value ="1"> 
+				<form id="TheForm" method="post" action="/save_selection" target="form">			
+				</form>
+				<button type="button" onClick="update_selection()">Update selection</button> 
+			</div>
+			<div id='scatter'class ='contained' style='width:26%;'></div>
+		</div>
+		<div id='corr' class ='contained' style='border: 2px solid black;width:24%;'></div>
+		<div class ='contained' style='border: 2px solid black;width:50%'>
+			<h5 id='classifier_title'>Classifier performance</h5>
+			<div id='performace_plot' ></div>
+		</div>
+	</div>
+	
+	<div id='explanation_plot'/></div>
+	
+	<div style='text-align:right;border:2px solid black;'>
+		<label for="user_name">User_id:</label>
+		<input id='user_name'></input>
+		<button onClick='submit_results()'>Submit_results</button>
+	</div>
+	
+    <script>
+	
+	
+
+		//Global vars
+		selected = 1;
+		select_color=['blue','yellow'];
+		var scatter_plot;
+		
+		function submit_results(){
+			var user_id =document.getElementById("user_name").value;
+			
+			if (user_id.length==0) {
+				window.alert("Please input your user_id");
+				return;
+			}
+			url_params['user_id'] = user_id;
+
+			
+			d3.json('submit_results'+encode_params(url_params),function(err,d){
+				console.log(d)
+				if (err) {
+					window.alert("An error occured when processing the data\n"+err);
+					return;
+				}
+				url_params = new Object();				
+				url_params['user_id'] = document.getElementById("user_name").value;
+				window.alert("Thanks for your input! :D");
+				window.location.href = '/'+encode_params(url_params)
+			});
+		}
+		
+		function checkInput(){
+			console.log('AAAARGH');
+			let val = document.getElementById("quantity").value;
+			  if (!isNaN(parseInt(val))) selected = +val;
+			console.log(selected);
+		}
+		
+		function update_selection(){
+			new_open_window(scatter_plot.get_selection())
+		}
+		
+		function encode_params(params){
+			var encoded ='?'
+			for(var key in params) {
+				encoded += key+'='+params[key]+'&'
+			}
+			return encoded.slice(0,-1);
+		}
+		
+		function decode_parameters(){
+			var url_params = new Object();
+			var sPageURL = window.location.search.substring(1);
+			var sURLVariables = sPageURL.split('&');
+			for (var i = 0; i < sURLVariables.length; i++)
+			{
+				var sParameterName = sURLVariables[i].split('=');	
+				if(sParameterName[1])
+					url_params[sParameterName[0]] = sParameterName[1];
+			}
+			return url_params;
+		}
+		
+		function new_open_window(value){
+			var request = new XMLHttpRequest();
+			request.open('POST', '/save_test', true);
+
+			request.onload = function() {
+				if (this.status == 200) {				
+					url_params['selection'] = this.responseText
+					window.location.href = '/explanation'+encode_params(url_params)
+				}
+			}
+			request.send(value);
+		}
+	
+		var url_params = decode_parameters();
+		create_navigation();
+		
+		d3.select('#classifier_title').text(url_params['classifier']+' performace')
+		
+		if(url_params['user_id']){
+			document.getElementById("user_name").value = url_params['user_id'];
+		}
+		
+		d3.csv('http:\\scatter_d3'+encode_params(url_params),function(data){
+			console.log(url_params['D_R']);
+			scatter_plot = new Scatterplot('#scatter',data,url_params['dataset'],url_params['D_R']);			
+		});
+		
+		d3.csv('http:\\corr_matrix'+encode_params(url_params),function(data){
+			console.log(data)
+			new Correlation('#corr',data,[]);			
+		});
+
+		if(url_params['selection']){
+			d3.csv('http:\\elaborate_dataset_id_'+url_params['selection']+''+encode_params(url_params),function(data){
+				console.log(data);
+				new Explanation_container('#explanation_plot',data);
+			});
+		}
+		new Performance('#performace_plot',[],url_params['classifier'],true,550,200);
+    </script>
+</body>
+
+
+
+
+
+<!-- OLD CODE -->
+		<!-- var payload = { -->
+			<!-- a: 1, -->
+			<!-- b: 2, -->
+			<!-- selected: '{{params}}' -->
+		<!-- }; -->
+
+		<!-- var data = new FormData(); -->
+		<!-- data.append( "json", JSON.stringify( payload ) ); -->
+
+		<!-- fetch("/elaborate_dataset", -->
+		<!-- { -->
+			<!-- method: "POST", -->
+			<!-- body: data -->
+		<!-- }) -->
+		<!-- .then(function(res){ return res.text()}) -->
+		<!-- .then(function(data){  -->
+			<!-- csv =  d3.csvParse(data); -->
+			<!-- new Boxplot('#explanation_plot',csv); -->
+			<!-- new Histogram('#explanation_plot',csv); -->
+		<!-- }) -->

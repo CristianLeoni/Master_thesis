@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+  <title>Band scale</title>
+</head>
+
+<style>
+body{
+	text-align:center;
+	background-color: #f1f1f1;
+	}
+div.bk.*{
+	text-align:center;
+	background-color: white;
+	}
+	button{
+		padding:5px;
+		background-color: #f1f1f1;
+		border-radius:10px;
+		border:2px solid black;
+	  }
+
+</style>
+
+</head>
+
+<body>
+	<script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-2.2.1.min.js" integrity="sha384-qkRvDQVAIfzsJo40iRBbxt6sttt0hv4lh74DG7OK4MCHv4C5oohXYoHUM5W11uqS" crossorigin="anonymous"></script>
+	<script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-widgets-2.2.1.min.js" integrity="sha384-Sb7Mr06a9TNlet/GEBeKaf5xH3eb6AlCzwjtU82wNPyDrnfoiVl26qnvlKjmcAd+" crossorigin="anonymous"></script>
+	<script src="https://d3js.org/d3.v4.min.js"></script>
+	<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+	<script src="{{ url_for('static', filename='Navigation.js') }}"></script>
+	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.2.2/d3.min.js"></script> -->
+
+<form id="TheForm" method="post" action="/save_selection" target="form">
+<input type="hidden" name="json" value="something" />
+</form>
+
+<script>
+	function encode_params(params){
+			var encoded ='?'
+			for(var key in params) {
+				encoded += key+'='+params[key]+'&'
+			}
+			return encoded.slice(0,-1);
+		}
+	function decode_parameters(){
+		var url_params = new Object();
+		var sPageURL = window.location.search.substring(1);
+		var sURLVariables = sPageURL.split('&');
+		for (var i = 0; i < sURLVariables.length; i++)
+		{
+			var sParameterName = sURLVariables[i].split('=');				
+			if(sParameterName[1])
+				url_params[sParameterName[0]] = sParameterName[1];
+
+		}
+		return url_params;
+	}
+	
+	var url_params = decode_parameters();
+	create_navigation();	
+	
+	
+	col = ['red','green'];
+	cl = 1;
+	col = d3.scaleOrdinal().domain([0,1]).range(['blue','yellow'])
+	source = []
+	
+	
+	
+	function test(){
+		console.log('document loaded');
+	}
+	
+	function visualize_explanation(src){
+		console.log("Visualize");
+		d3.selectAll("iframe").remove();
+		d3.select("body").append("iframe").attr("src",src).attr("title","InnerHTML").attr("class","exp");
+	}
+	function openWindowWithPost(value) {
+	  var f = document.getElementById('TheForm');
+	  f.json.value = value;
+	  window.location.replace('');
+	  console.log('POST response');
+	  console.log(f.submit());
+	  console.log(f);
+	}
+	
+	function new_open_window(value){
+		var request = new XMLHttpRequest();
+		request.open('POST', '/save_test', true);
+
+		request.onload = function() {
+			if (this.status == 200) {
+			  console.log(this.responseText);
+			  url_params['selection'] = this.responseText
+			  window.location.href = '/classifier_selection'+encode_params(url_params)
+			}
+		}
+		request.send(value);
+	}
+	
+</script>
+	<div>{{div_bok|safe}}
+            {{script_bok|safe}}
+	</div>
+</body>
+</html>

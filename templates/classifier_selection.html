@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+  <title>Band scale</title>
+</head>
+<style>
+	.leftcolumn {
+		float: left;
+		width: 23%;
+		height: 100%;
+		padding-left: 20px;
+	  }
+	.rightcolumn {
+		float: right;
+		width: 73%;
+		height: 700px;
+		background-color: #f1f1f1;
+		padding-left: 20px;
+		overflow:auto;
+		padding-top:10px;
+		border:2px solid black;
+
+	  }
+	  #param_grid{
+		border-top:2px solid black;
+		border-bottom:2px solid black;
+	  	grid-gap: 10px;
+		grid-template-columns: repeat(6, 1fr);
+		grid-template-rows: repeat(auto-fill, auto-fill);
+		float:left;
+		padding :10px;
+		text-align:center;
+		width:97%;
+		}
+	  .menu_entry{
+		padding:5px;
+		background-color: #f1f1f1;
+		border-radius:10px;
+		border:2px solid black;
+	  }
+	button{
+		float: right;
+		background-color: #f1f1f1;
+		border-radius:10px;
+		padding:5px;
+		border:2px solid black;
+	  }
+</style>
+<!-- grid-template-columns: repeat(6, 1fr); -->
+		<!-- grid-template-rows: repeat(auto-fill, 70px); -->
+<body>
+
+	<div class="row">
+		<div id ='menu' class="leftcolumn">
+		</div>
+		<div id='details' class="rightcolumn">
+			<div id='performance_plot' style='height : 420px'></div>
+			<div id='param_grid'></div>
+			<div id='text_info'>
+			</div>
+		</div>
+		<button onclick="navigate()">Next</button>
+	</div>
+	
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.2.2/d3.min.js"></script>
+	<script src="{{ url_for('static', filename='Menu.js') }}"></script>
+	<script src="{{ url_for('static', filename='Parameters.js') }}"></script>
+	<script src="{{ url_for('static', filename='Performance.js') }}"></script>
+	<script src="{{ url_for('static', filename='Navigation.js') }}"></script>
+	<script>
+  
+  		function encode_params(params){
+			var encoded ='?'
+			for(var key in params) {
+				encoded += key+'='+params[key]+'&'
+			}
+			return encoded.slice(0,-1);
+		}
+		function decode_parameters(){
+			var url_params = new Object();
+			var sPageURL = window.location.search.substring(1);
+			var sURLVariables = sPageURL.split('&');
+			for (var i = 0; i < sURLVariables.length; i++)
+			{
+				var sParameterName = sURLVariables[i].split('=');		
+				if(sParameterName[1])
+					url_params[sParameterName[0]] = sParameterName[1];
+			}
+			return url_params;
+		}
+		 
+		function navigate(){
+			window.location.href = '/explanation'+encode_params(url_params)
+		}
+		var performance,parameter;
+		var url_params = decode_parameters();
+		create_navigation();
+		url_params['classifier_params']='[]';
+		url_params['classifier']='Knn';
+		console.log(url_params)
+	  
+		var menu_details,menu;
+		
+		function callback(){
+			var selected = menu.get_selected()
+			if(selected == 'Overview'){
+				<!-- performance=new Performance('#performance_plot',[]); -->
+				performance.set_classifiers('*')
+				parameter.hide();
+				return;
+			}
+			parameter.draw()
+			performance.set_classifiers(selected)
+			<!-- performance.hide() -->
+			parameter.show();
+			url_params['classifier']=selected;
+			d3.json('/get_classifier_'+selected,function(data){
+				parameter.update(data);
+			});
+		}
+		
+		function parameter_update(){
+			console.log('parameter update');
+			url_params['classifier_params']='['+parameter.get_selected()+']';
+			performance.update();
+		}
+				
+		parameter = new Parameter_grid('#param_grid',[],parameter_update);
+		parameter.hide();
+		performance = new Performance('#performance_plot',[]);
+		
+		d3.json('/get_classifier_*',function(d){
+			d.unshift('Overview')
+			menu = new Menu('#menu',d,callback);
+			menu.select(d[0]);
+		})
+		
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- <style> -->
+
+<!-- html, body, #fullheight { -->
+			<!-- min-height: 100% !important; -->
+			<!-- height: 100%; -->
+		<!-- } -->
+<!-- * { -->
+  <!-- box-sizing: border-box; -->
+<!-- } -->
+<!-- .menu_entry{ -->
+	<!-- padding:5px; -->
+	<!-- background-color: #f1f1f1; -->
+	<!-- border-radius:10px; -->
+	<!-- border:2px solid black; -->
+<!-- } -->
+
+<!-- body { -->
+  <!-- font-family: "Helvetica Neue", Helvetica, sans-serif; -->
+  <!-- font-size: 14px; -->
+  <!-- color: #333; -->
+<!-- } -->
+
+<!-- .row:after { -->
+  <!-- content: ""; -->
+  <!-- display: table; -->
+  <!-- clear: both; -->
+<!-- } -->
+
+<!-- .leftcolumn {    -->
+  <!-- float: left; -->
+  <!-- width: 25%; -->
+  <!-- height: 100%; -->
+<!-- } -->
+
+<!-- .rightcolumn { -->
+  <!-- float: left; -->
+  <!-- width: 75%; -->
+  <!-- height: 100%; -->
+  <!-- background-color: #f1f1f1; -->
+  <!-- padding-left: 20px; -->
+<!-- } -->
+<!-- </style> -->
